@@ -82,11 +82,14 @@ public abstract class AbstractRiakLBMCrudRepository<T extends Base>
     public <S extends T> S save(S entity) {
         BinaryValue oldValue = entity.binaryValue;
         String id = entity.getId();
-        StoreValue.Builder builder =
-                (null == id ? new StoreValue.Builder(namespace())
-                        : new StoreValue.Builder(location(entity)))
-                        .withOption(StoreValue.Option.RETURN_BODY,
-                                Boolean.TRUE);
+        StoreValue.Builder builder = new StoreValue.Builder(entity).withOption(
+                StoreValue.Option.RETURN_BODY,Boolean.TRUE);
+        if (null == id) {
+            builder.withNamespace(namespace());
+        }
+        else {
+            builder.withLocation(location(entity));
+        }
         if (null != entity.vClock) {
             builder.withVectorClock(entity.vClock);
         }
